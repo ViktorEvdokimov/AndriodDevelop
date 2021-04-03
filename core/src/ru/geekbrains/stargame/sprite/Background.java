@@ -7,6 +7,7 @@ import ru.geekbrains.stargame.base.Sprite;
 import ru.geekbrains.stargame.math.Rect;
 
 public class Background extends Sprite {
+
     public Background(Texture texture) {
         super(new TextureRegion(texture));
     }
