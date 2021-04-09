@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.stargame.math.MatrixUnits;
 import ru.geekbrains.stargame.math.Rect;
 
-public class BaseScreen implements Screen, InputProcessor {
+public abstract class BaseScreen implements Screen, InputProcessor {
 
     protected SpriteBatch batch;
     private Rect screenBounds;
@@ -114,6 +114,12 @@ public class BaseScreen implements Screen, InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         touch.set(screenX, screenBounds.getHeight() - screenY).mul(screenToWorld);
+        touchUp(touch, pointer, button);
+        return false;
+    }
+
+    public boolean touchUp(Vector2 touch, int pointer, int button) {
+        System.out.println("touchDown touchX = " + touch.x + " touchY = " + touch.y);
         return false;
     }
 
