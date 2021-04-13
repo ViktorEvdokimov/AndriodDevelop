@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.math.Rect;
 
-public class Sprite extends Rect {
+public abstract class Sprite extends Rect {
 
     protected float angle;
     protected float scale = 1f;
@@ -53,6 +53,8 @@ public class Sprite extends Rect {
         return false;
     }
 
+ //   public boolean
+
     public float getAngle() {
         return angle;
     }
@@ -68,4 +70,14 @@ public class Sprite extends Rect {
     public void setScale(float scale) {
         this.scale = scale;
     }
+
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    public boolean keyUp(int keycode) {
+        return false;
+    }
 }
+
+
