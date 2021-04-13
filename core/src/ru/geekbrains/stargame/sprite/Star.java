@@ -29,7 +29,7 @@ public class Star extends Sprite {
     }
 
     @Override
-    public void update(float woldSpeed) {
+    public void update(float woldSpeed, float delta) {
         pos.add(v.x, v.y-woldSpeed);
         height += Rnd.nextFloat(-0.0001f, 0.00015f);
         if (height<0.001f || height>0.01f) height=0.005f;

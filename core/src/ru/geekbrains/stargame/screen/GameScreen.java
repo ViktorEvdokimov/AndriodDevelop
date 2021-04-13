@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.stargame.StarGame;
 import ru.geekbrains.stargame.base.BaseScreen;
 import ru.geekbrains.stargame.math.Rect;
+import ru.geekbrains.stargame.pool.BulletPool;
 import ru.geekbrains.stargame.sprite.Background;
 import ru.geekbrains.stargame.sprite.SpaceShip;
 import ru.geekbrains.stargame.sprite.Stars;
@@ -21,6 +22,7 @@ public class GameScreen extends BaseScreen {
     private Stars stars;
     private float worldSpeed = 0.001f;
     private SpaceShip spaceShip;
+    private BulletPool bulletPool;
 
 
 
@@ -37,7 +39,8 @@ public class GameScreen extends BaseScreen {
         background = new Background(bg);
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
         stars = new Stars(atlas, 64);
-        spaceShip = new SpaceShip(atlas);
+        bulletPool = new BulletPool();
+        spaceShip = new SpaceShip(atlas, bulletPool);
 
     }
 
@@ -52,18 +55,29 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        super.render(delta);
         worldSpeed += 0.000001f;
-        Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        update(delta);
+        freeAllDestroyed();
+        draw();
+    }
+
+    private void update (float delta){
+        stars.update(worldSpeed, delta);
+        spaceShip.update(worldSpeed, delta);
+        bulletPool.updateActiveSprites(worldSpeed, delta);
+    }
+
+    private void draw (){
         batch.begin();
         background.draw(batch);
-        stars.update(worldSpeed);
         stars.draw(batch);
-        spaceShip.update(worldSpeed);
         spaceShip.draw(batch);
+        bulletPool.drawActiveSprites(batch);
         batch.end();
+    }
 
+    private void freeAllDestroyed() {
+        bulletPool.freeAllDestroyedActiveSprites();
     }
 
     @Override

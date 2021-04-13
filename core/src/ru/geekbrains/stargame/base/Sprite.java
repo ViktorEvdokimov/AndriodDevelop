@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.math.Rect;
+import ru.geekbrains.stargame.math.Split;
 
 public abstract class Sprite extends Rect {
 
@@ -12,10 +13,18 @@ public abstract class Sprite extends Rect {
     protected float scale = 1f;
     protected TextureRegion[] regions;
     protected int frame;
+    protected boolean destroyed;
 
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
         regions[0] = region;
+    }
+
+    public Sprite(TextureRegion region, int rows, int cols, int frames) {
+        regions = Split.split(region, rows, cols, frames);
+    }
+
+    protected Sprite() {
     }
 
     public void setHeightProportional (float height){
@@ -35,10 +44,22 @@ public abstract class Sprite extends Rect {
         );
     }
 
+    public void flushDestroy() {
+        destroyed = false;
+    }
+
     public void resize (Rect worldBounds){
     }
 
-    public void update (float data){
+    public void destroy (){
+        destroyed=true;
+    }
+
+    public void update (float data, float delta){
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
     }
 
     public boolean touchDown(Vector2 touch, int pointer, int button) {
