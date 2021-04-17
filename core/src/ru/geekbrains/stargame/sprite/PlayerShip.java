@@ -32,7 +32,7 @@ public class PlayerShip extends SpaceShip {
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         bulletV = new Vector2(0, 0.5f);
         sound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
-        reloadInterval = 5.25f;
+        reloadInterval = 0.25f;
         setHeightProportional(0.15f);
     }
 
@@ -53,17 +53,17 @@ public class PlayerShip extends SpaceShip {
     }
 
     @Override
-    public void update(float speed, float delta) {
+    public void update(float worldSpeed, float delta) {
         reloadTimer += delta;
         if (reloadTimer > reloadInterval) {
             reloadTimer = 0f;
             shoot();
         }
-        super.update(speed, delta);
+        super.update(worldSpeed, delta);
         temp.set(purpose);
         direction.set(purpose);
         direction.sub(pos);
-        direction.setLength(0.003f+speed);
+        direction.setLength(0.003f*worldSpeed);
         if(temp.sub(pos).len()<=direction.len()) {
             pos.set(purpose);
         }
@@ -80,10 +80,10 @@ public class PlayerShip extends SpaceShip {
         if (getRight() > worldBounds.getRight()) {
             purpose.set(worldBounds.getRight()-getHalfWidth(), purpose.y);
         }
-        if (upPressed) purpose.add(0, 0.003f+speed);
-        if (downPressed) purpose.add(0, -(0.003f+speed));
-        if (rightPressed) purpose.add(0.003f+speed, 0);
-        if (leftPressed) purpose.add(-(0.003f+speed), 0);
+        if (upPressed) purpose.add(0, 0.003f*worldSpeed);
+        if (downPressed) purpose.add(0, -(0.003f*worldSpeed));
+        if (rightPressed) purpose.add(0.003f*worldSpeed, 0);
+        if (leftPressed) purpose.add(-(0.003f*worldSpeed), 0);
 
     }
 

@@ -41,7 +41,7 @@ public class Bullet extends Sprite {
 
         @Override
         public void update(float worldSpeed, float delta) {
-            tmp.set(v.x, v.y+worldSpeed);
+            tmp.set(v.x, v.y*worldSpeed);
             pos.mulAdd(tmp, delta);
             if (isOutside(worldBounds)) {
                 destroy();

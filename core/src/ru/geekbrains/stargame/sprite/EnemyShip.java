@@ -41,6 +41,10 @@ public class EnemyShip extends SpaceShip{
 
     @Override
     public void update(float worldSpeed, float delta) {
+        if (bulletPool.isHit(this)) {
+            frame = 1;
+            destroy();
+        } else frame = 0;
         if (getTop()>worldBounds.getTop()){
             v.set(startV);
         } else {
@@ -54,7 +58,7 @@ public class EnemyShip extends SpaceShip{
             } else if (pos.x - playerShip.getPos().x < -defaultSpeed) {
                 v.set(defaultSpeed, 0);
             } else v.set(0, 0);
-            v.add(0, -defaultSpeed - worldSpeed);
+            v.add(0, -defaultSpeed * worldSpeed);
         }
         pos.add(v);
         if (getTop() < worldBounds.getBottom()) {
@@ -83,12 +87,13 @@ public class EnemyShip extends SpaceShip{
         this.reloadInterval = reloadInterval;
         setHeightProportional(height);
         this.hp = hp;
+        reloadTimer = 0;
     }
 
     @Override
     protected void shoot() {
         Bullet bullet = bulletPool.obtain();
-        tmp.set(pos.x, getBottom());
+        tmp.set(pos.x, getBottom()-bulletHeight);
         sound.play(0.1f);
         bullet.set(this, bulletRegion, this.tmp, bulletV, worldBounds, damage, bulletHeight);
     }

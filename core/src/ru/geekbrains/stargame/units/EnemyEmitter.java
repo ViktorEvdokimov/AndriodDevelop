@@ -16,7 +16,7 @@ public class EnemyEmitter {
 
     private static final float ENEMY_SMALL_HEIGHT = 0.1f;
     private static final float ENEMY_SMALL_BULLET_HEIGHT = 0.01f;
-    private static final Vector2 ENEMY_SMALL_BULLET_VY = new Vector2(0, -0.3f);
+    private static final Vector2 ENEMY_SMALL_BULLET_VY = new Vector2(0, -0.4f);
     private static final int ENEMY_SMALL_BULLET_DAMAGE = 1;
     private static final float ENEMY_SMALL_RELOAD_INTERVAL = 3f;
     private static final int ENEMY_SMALL_HP = 1;
@@ -55,9 +55,9 @@ public class EnemyEmitter {
     public EnemyEmitter(Rect worldBounds, EnemyPool enemyPool, TextureAtlas atlas) {
         this.worldBounds = worldBounds;
         this.enemyPool = enemyPool;
-        enemySmallV = 0.002f;
-        enemyMediumV = 0.0015f;
-        enemyBigV = 0.00025f;
+        enemySmallV = 0.005f;
+        enemyMediumV = 0.002f;
+        enemyBigV = 0.0007f;
         bulletRegion = atlas.findRegion("bulletEnemy");
         enemySmallRegions = Split.split(atlas.findRegion("enemy0"), 1, 2, 2);
         enemyMediumRegions = Split.split(atlas.findRegion("enemy1"), 1, 2, 2);
@@ -72,7 +72,7 @@ public class EnemyEmitter {
             EnemyShip enemyShip = enemyPool.obtain();
             float type = (float) Math.random();
             if (type < 0.5f) {
-                generateInterval = 2.5f;
+                generateInterval = 1.5f;
                 enemyShip.set(
                         enemySmallRegions,
                         enemySmallV,
@@ -85,7 +85,7 @@ public class EnemyEmitter {
                         ENEMY_SMALL_HP
                 );
             } else if (type < 0.8f) {
-                generateInterval = 4f;
+                generateInterval = 2.5f;
                 enemyShip.set(
                         enemyMediumRegions,
                         enemyMediumV,
@@ -98,7 +98,7 @@ public class EnemyEmitter {
                         ENEMY_MEDIUM_HP
                 );
             } else {
-                generateInterval = 6f;
+                generateInterval = 4f;
                 enemyShip.set(
                         enemyBigRegions,
                         enemyBigV,

@@ -24,7 +24,7 @@ public class GameScreen extends BaseScreen {
     private Background background;
     private TextureAtlas atlas;
     private Stars stars;
-    private float worldSpeed = 0.0001f;
+    private float worldSpeed = 1f;
     private SpaceShip spaceShip;
     private BulletPool bulletPool;
     private EnemyPool enemyPool;
@@ -61,7 +61,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        worldSpeed += 0.000001f;
+        worldSpeed += 0.0001f;
         update(delta);
         freeAllDestroyed();
         draw();
