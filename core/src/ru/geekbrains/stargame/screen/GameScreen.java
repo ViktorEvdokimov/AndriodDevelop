@@ -19,6 +19,7 @@ import ru.geekbrains.stargame.sprite.Background;
 import ru.geekbrains.stargame.sprite.Bullet;
 import ru.geekbrains.stargame.sprite.EnemyShip;
 import ru.geekbrains.stargame.sprite.GameOver;
+import ru.geekbrains.stargame.sprite.NewGameButton;
 import ru.geekbrains.stargame.sprite.PlayerShip;
 import ru.geekbrains.stargame.sprite.SpaceShip;
 import ru.geekbrains.stargame.sprite.Stars;
@@ -40,6 +41,7 @@ public class GameScreen extends BaseScreen {
     private Sound explosionSound;
     private ExplosionPool explosionPool;
     private GameOver gameOver;
+    private NewGameButton newGameButton;
 
     @Override
     public void show() {
@@ -58,6 +60,7 @@ public class GameScreen extends BaseScreen {
         enemyEmitter = new EnemyEmitter(worldBounds, enemyPool, atlas);
         enemyPool.setEnemyEmitter(enemyEmitter);
         gameOver = new GameOver(atlas);
+        newGameButton = new NewGameButton(atlas, this);
     }
 
     @Override
@@ -67,6 +70,7 @@ public class GameScreen extends BaseScreen {
         stars.resize(worldBounds);
         spaceShip.resize(worldBounds);
         gameOver.resize(worldBounds);
+        newGameButton.resize(worldBounds);
     }
 
     @Override
@@ -141,7 +145,10 @@ public class GameScreen extends BaseScreen {
             spaceShip.draw(batch);
             bulletPool.drawActiveSprites(batch);
             enemyPool.drawActiveSprites(batch);
-        } else gameOver.draw(batch);
+        } else {
+            gameOver.draw(batch);
+            newGameButton.draw(batch);
+        }
         explosionPool.drawActiveSprites(batch);
         batch.end();
     }
@@ -159,12 +166,13 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         spaceShip.touchDown(touch,pointer,button);
+        newGameButton.touchDown(touch, pointer, button);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-
+        newGameButton.touchUp(touch, pointer, button);
         return false;
     }
 
@@ -178,6 +186,14 @@ public class GameScreen extends BaseScreen {
     public boolean keyUp(int keycode) {
         spaceShip.keyUp(keycode);
         return false;
+    }
+
+    public void newGame (){
+        enemyPool.cleanAllActiveElements();
+        bulletPool.cleanAllActiveElements();
+        worldSpeed = 1f;
+        spaceShip.setHp(100);
+        spaceShip.flushDestroy();
     }
 }
 

@@ -115,4 +115,8 @@ public class SpaceShip extends Sprite {
         Explosion explosion = explosionPool.obtain();
         explosion.set(pos, getHeight());
     }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
 }

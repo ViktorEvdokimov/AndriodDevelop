@@ -36,4 +36,6 @@ public class EnemyPool extends BaseSpritesPool<EnemyShip> {
     protected EnemyShip newSprite() {
         return new EnemyShip(bulletPool, worldBounds, sound, playerShip, enemyEmitter, explosionPool);
     }
+
+
 }
