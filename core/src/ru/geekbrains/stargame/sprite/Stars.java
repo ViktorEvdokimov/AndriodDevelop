@@ -29,10 +29,10 @@ public class Stars {
         }
     }
 
-    public void update(float woldSpeed) {
+    public void update(float woldSpeed, float delta) {
         this.woldSpeed=woldSpeed;
         for (Star star: stars) {
-            star.update(woldSpeed);
+            star.update(woldSpeed, delta);
         }
     }
 

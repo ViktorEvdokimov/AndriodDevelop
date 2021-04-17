@@ -1,6 +1,7 @@
 package ru.geekbrains.stargame.sprite;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.base.Sprite;
 import ru.geekbrains.stargame.math.Rect;
+import ru.geekbrains.stargame.pool.BulletPool;
 
 public class SpaceShip extends Sprite {
 
@@ -15,21 +17,28 @@ public class SpaceShip extends Sprite {
     private Vector2 purpose = new Vector2();
     private Vector2 direction = new Vector2();
     private Vector2 temp = new Vector2();
-    private float speed;
-    private TextureRegion texture;
     private boolean upPressed = false;
     private boolean downPressed = false;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
     private Rect worldBounds;
+    private BulletPool bulletPool;
+    private Vector2 bulletV;
+    private static final float RELOAD_INTERVAL = 0.15f;
+    private float reloadTimer;
+    private TextureRegion bulletRegion;
+    private Sound sound;
 
-    public SpaceShip(TextureAtlas atlas) {
-        super(atlas.findRegion("main_ship"));
+
+    public SpaceShip(TextureAtlas atlas, BulletPool bulletPool) {
+        super(atlas.findRegion("main_ship"), 1, 2, 2);
         setBottom(0f);
         setRight(0f);
         setHeightProportional(0.2f);
-        regions[frame].setRegionWidth(regions[frame].getRegionWidth()/2);
-        setWidth(getWidth()*0.5f);
+        this.bulletPool = bulletPool;
+        this.bulletRegion = atlas.findRegion("bulletMainShip");
+        bulletV = new Vector2(0, 0.5f);
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
     }
 
     @Override
@@ -41,11 +50,12 @@ public class SpaceShip extends Sprite {
     }
 
     @Override
-    public void update(float speed) {
-        if (upPressed) purpose.add(0, 0.003f+speed);
-        if (downPressed) purpose.add(0, -(0.003f+speed));
-        if (rightPressed) purpose.add(0.003f+speed, 0);
-        if (leftPressed) purpose.add(-(0.003f+speed), 0);
+    public void update(float speed, float delta) {
+        reloadTimer += delta;
+        if (reloadTimer > RELOAD_INTERVAL) {
+            reloadTimer = 0f;
+            shoot();
+        }
         temp.set(purpose);
         direction.set(purpose);
         direction.sub(pos);
@@ -54,14 +64,22 @@ public class SpaceShip extends Sprite {
             pos.set(purpose);
         }
         else pos.add(direction);
-        if (getTop() > worldBounds.getTop())
+        if (getTop() > worldBounds.getTop()) {
             purpose.set(purpose.x, worldBounds.getTop()-getHalfHeight());
-        if (getBottom() < worldBounds.getBottom())
+        }
+        if (getBottom() < worldBounds.getBottom()) {
             purpose.set(purpose.x, worldBounds.getBottom()+getHalfHeight());
-        if (getLeft() < worldBounds.getLeft())
+        }
+        if (getLeft() < worldBounds.getLeft()) {
             purpose.set(worldBounds.getLeft()+getHalfWidth(), purpose.y);
-        if (getRight() > worldBounds.getRight())
+        }
+        if (getRight() > worldBounds.getRight()) {
             purpose.set(worldBounds.getRight()-getHalfWidth(), purpose.y);
+        }
+        if (upPressed) purpose.add(0, 0.003f+speed);
+        if (downPressed) purpose.add(0, -(0.003f+speed));
+        if (rightPressed) purpose.add(0.003f+speed, 0);
+        if (leftPressed) purpose.add(-(0.003f+speed), 0);
 
     }
 
@@ -93,5 +111,12 @@ public class SpaceShip extends Sprite {
             if (keycode==21 || keycode==29) leftPressed=false;
             if (keycode==22 || keycode==32) rightPressed=false;
         return false;
+    }
+
+    private void shoot (){
+        Bullet bullet = bulletPool.obtain();
+        temp.set(pos.x, getTop());
+        sound.play(0.1f);
+        bullet.set(this, bulletRegion, this.temp, bulletV, worldBounds, 1, 0.01f);
     }
 }
