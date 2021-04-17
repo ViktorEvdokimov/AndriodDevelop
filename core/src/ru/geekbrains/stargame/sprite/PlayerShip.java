@@ -8,32 +8,34 @@ import com.badlogic.gdx.math.Vector2;
 
 
 import ru.geekbrains.stargame.math.Rect;
+import ru.geekbrains.stargame.math.Split;
 import ru.geekbrains.stargame.pool.BulletPool;
+import ru.geekbrains.stargame.pool.ExplosionPool;
 
 public class PlayerShip extends SpaceShip {
 
 
     private Vector2 purpose = new Vector2();
     private Vector2 direction = new Vector2();
-    private Vector2 temp = new Vector2();
     private boolean upPressed = false;
     private boolean downPressed = false;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
-    private BulletPool bulletPool;
-    private Vector2 bulletV;
-    protected TextureRegion bulletRegion;
-    private Sound sound;
 
 
-    public PlayerShip(TextureAtlas atlas, BulletPool bulletPool) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2);
+    public PlayerShip(TextureAtlas atlas, BulletPool bulletPool,
+                      ExplosionPool explosionPool, Sound sound) {
+        super(bulletPool, sound);
         this.bulletPool = bulletPool;
         this.bulletRegion = atlas.findRegion("bulletMainShip");
+        this.explosionPool = explosionPool;
+        regions = Split.split(atlas.findRegion("main_ship"), 1, 2, 2);
         bulletV = new Vector2(0, 0.5f);
-        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
         reloadInterval = 0.25f;
         setHeightProportional(0.15f);
+        this.damage =1;
+        this.bulletHeight = 0.01f;
+        hp = 1;
     }
 
     @Override
@@ -54,11 +56,7 @@ public class PlayerShip extends SpaceShip {
 
     @Override
     public void update(float worldSpeed, float delta) {
-        reloadTimer += delta;
-        if (reloadTimer > reloadInterval) {
-            reloadTimer = 0f;
-            shoot();
-        }
+        bulletStartPosition.set(pos.x, getTop()+bulletHeight);
         super.update(worldSpeed, delta);
         temp.set(purpose);
         direction.set(purpose);
@@ -86,9 +84,6 @@ public class PlayerShip extends SpaceShip {
         if (leftPressed) purpose.add(-(0.003f*worldSpeed), 0);
 
     }
-
-
-
     @Override
     public boolean keyDown(int keycode) {
         System.out.println(keycode);
@@ -108,11 +103,11 @@ public class PlayerShip extends SpaceShip {
         return false;
     }
 
-
-    protected void shoot (){
-        Bullet bullet = bulletPool.obtain();
-        temp.set(pos.x, getTop());
-        sound.play(0.1f);
-        bullet.set(this, bulletRegion, this.temp, bulletV, worldBounds, 1, 0.01f);
+    @Override
+    public boolean isBulletCollision(Rect bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > pos.y
+                || bullet.getTop() < getBottom());
     }
 }

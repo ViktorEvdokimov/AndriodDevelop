@@ -1,58 +1,43 @@
 package ru.geekbrains.stargame.sprite;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.math.Rect;
 import ru.geekbrains.stargame.pool.BulletPool;
+import ru.geekbrains.stargame.pool.ExplosionPool;
 import ru.geekbrains.stargame.units.EnemyEmitter;
 
 public class EnemyShip extends SpaceShip{
 
     private Vector2 startV;
-    private  BulletPool bulletPool;
-    private  Rect worldBounds;
-    private Sound sound;
     private  SpaceShip playerShip;
-    private  Vector2 v;
     private float defaultSpeed;
-    private  Vector2 tmp;
-    private  TextureRegion bulletRegion;
-    private Vector2 bulletV;
-    private float bulletHeight;
-    private int damage;
-    private int hp;
     private  EnemyEmitter enemyEmitter;
 
 
     public EnemyShip(BulletPool bulletPool, Rect worldBounds,
-                     Sound sound, SpaceShip playerShip, EnemyEmitter enemyEmitter) {
+                     Sound sound, SpaceShip playerShip, EnemyEmitter enemyEmitter, ExplosionPool explosionPool) {
+        super(bulletPool, sound);
         this.bulletPool=bulletPool;
         this.worldBounds=worldBounds;
-        this.sound=sound;
         this.playerShip = playerShip;
-        this.sound = sound;
         this.enemyEmitter = enemyEmitter;
+        this.explosionPool = explosionPool;
         v = new Vector2();
-        tmp = new Vector2();
+        temp = new Vector2();
         startV = new Vector2(0, -0.007f);
     }
 
     @Override
     public void update(float worldSpeed, float delta) {
-        if (bulletPool.isHit(this)) {
-            frame = 1;
-            destroy();
-        } else frame = 0;
+        bulletStartPosition.set(pos.x, getBottom()-bulletHeight);
+        super.update(worldSpeed, delta);
         if (getTop()>worldBounds.getTop()){
             v.set(startV);
         } else {
-            reloadTimer += delta;
-            if (reloadTimer > 0) {
-                reloadTimer = -reloadInterval;
-                shoot();
-            }
             if (pos.x - playerShip.getPos().x > defaultSpeed) {
                 v.set(-defaultSpeed, 0);
             } else if (pos.x - playerShip.getPos().x < -defaultSpeed) {
@@ -87,14 +72,15 @@ public class EnemyShip extends SpaceShip{
         this.reloadInterval = reloadInterval;
         setHeightProportional(height);
         this.hp = hp;
-        reloadTimer = 0;
+        reloadTimer = reloadInterval * 0.8f;
     }
 
     @Override
-    protected void shoot() {
-        Bullet bullet = bulletPool.obtain();
-        tmp.set(pos.x, getBottom()-bulletHeight);
-        sound.play(0.1f);
-        bullet.set(this, bulletRegion, this.tmp, bulletV, worldBounds, damage, bulletHeight);
+    public boolean isBulletCollision(Rect bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > getTop()
+                || bullet.getTop() < pos.y);
     }
+
 }

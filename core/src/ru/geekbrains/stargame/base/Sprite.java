@@ -14,6 +14,7 @@ public abstract class Sprite extends Rect {
     protected TextureRegion[] regions;
     protected int frame;
     protected boolean destroyed;
+    protected Vector2 bulletV;
 
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];

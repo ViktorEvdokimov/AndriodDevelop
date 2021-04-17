@@ -1,6 +1,7 @@
 package ru.geekbrains.stargame.pool;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.stargame.base.BaseSpritesPool;
 import ru.geekbrains.stargame.math.Rect;
@@ -16,13 +17,15 @@ public class EnemyPool extends BaseSpritesPool<EnemyShip> {
     private final Sound sound;
     private final SpaceShip playerShip;
     private EnemyEmitter enemyEmitter;
+    private ExplosionPool explosionPool;
 
     public EnemyPool(BulletPool bulletPool, Rect worldBounds, Sound sound,
-                     SpaceShip playerShip) {
+                     SpaceShip playerShip, ExplosionPool explosionPool) {
         this.bulletPool = bulletPool;
         this.worldBounds = worldBounds;
         this.sound = sound;
         this.playerShip = playerShip;
+        this.explosionPool = explosionPool;
     }
 
     public void setEnemyEmitter(EnemyEmitter enemyEmitter) {
@@ -31,6 +34,6 @@ public class EnemyPool extends BaseSpritesPool<EnemyShip> {
 
     @Override
     protected EnemyShip newSprite() {
-        return new EnemyShip(bulletPool, worldBounds, sound, playerShip, enemyEmitter);
+        return new EnemyShip(bulletPool, worldBounds, sound, playerShip, enemyEmitter, explosionPool);
     }
 }
