@@ -24,7 +24,7 @@ public class GameScreen extends BaseScreen {
     private Background background;
     private TextureAtlas atlas;
     private Stars stars;
-    private float worldSpeed = 0.001f;
+    private float worldSpeed = 0.0001f;
     private SpaceShip spaceShip;
     private BulletPool bulletPool;
     private EnemyPool enemyPool;

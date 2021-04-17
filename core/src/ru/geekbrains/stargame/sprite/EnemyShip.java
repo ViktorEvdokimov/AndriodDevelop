@@ -10,6 +10,7 @@ import ru.geekbrains.stargame.units.EnemyEmitter;
 
 public class EnemyShip extends SpaceShip{
 
+    private Vector2 startV;
     private  BulletPool bulletPool;
     private  Rect worldBounds;
     private Sound sound;
@@ -25,7 +26,6 @@ public class EnemyShip extends SpaceShip{
     private  EnemyEmitter enemyEmitter;
 
 
-
     public EnemyShip(BulletPool bulletPool, Rect worldBounds,
                      Sound sound, SpaceShip playerShip, EnemyEmitter enemyEmitter) {
         this.bulletPool=bulletPool;
@@ -36,30 +36,34 @@ public class EnemyShip extends SpaceShip{
         this.enemyEmitter = enemyEmitter;
         v = new Vector2();
         tmp = new Vector2();
+        startV = new Vector2(0, -0.007f);
     }
 
     @Override
     public void update(float worldSpeed, float delta) {
-        reloadTimer += delta;
-        if (reloadTimer > reloadInterval) {
-            reloadTimer = 0f;
-            shoot();
+        if (getTop()>worldBounds.getTop()){
+            v.set(startV);
+        } else {
+            reloadTimer += delta;
+            if (reloadTimer > 0) {
+                reloadTimer = -reloadInterval;
+                shoot();
+            }
+            if (pos.x - playerShip.getPos().x > defaultSpeed) {
+                v.set(-defaultSpeed, 0);
+            } else if (pos.x - playerShip.getPos().x < -defaultSpeed) {
+                v.set(defaultSpeed, 0);
+            } else v.set(0, 0);
+            v.add(0, -defaultSpeed - worldSpeed);
         }
-        if (pos.x - playerShip.getPos().x > defaultSpeed){
-            v.set(-defaultSpeed, 0);
-        } else if (pos.x - playerShip.getPos().x < -defaultSpeed) {
-            v.set(defaultSpeed, 0);
-        } else v.set(0, 0);
-        v.add(0, -defaultSpeed - worldSpeed);
         pos.add(v);
-        if (isOutside(worldBounds)) {
+        if (getTop() < worldBounds.getBottom()) {
             destroy();
             enemyEmitter.shipOut();
         }
     }
 
     public void set (
-            Vector2 startPos,
             TextureRegion[] regions,
             float defaultSpeed,
             TextureRegion bulletRegion,
@@ -70,7 +74,6 @@ public class EnemyShip extends SpaceShip{
             float height,
             int hp
     ) {
-        this.pos.set(startPos);
         this.regions = regions;
         this.defaultSpeed = defaultSpeed;
         this.bulletRegion = bulletRegion;

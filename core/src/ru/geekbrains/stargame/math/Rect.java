@@ -16,8 +16,8 @@ public class Rect {
         return pos;
     }
 
-    public void setPos(Vector2 pos) {
-        this.pos = pos;
+    public void setPos(float x, float y) {
+        pos.set(x, y);
     }
 
     public Rect(Rect form) {

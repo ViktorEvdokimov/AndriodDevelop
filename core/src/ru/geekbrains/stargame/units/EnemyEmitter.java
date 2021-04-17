@@ -70,16 +70,10 @@ public class EnemyEmitter {
         if (generateTimer >= generateInterval) {
             generateTimer = 0;
             EnemyShip enemyShip = enemyPool.obtain();
-            xPos = Rnd.nextFloat(
-                    worldBounds.getLeft() + enemyShip.getHalfWidth(),
-                    worldBounds.getRight() - enemyShip.getHalfWidth()
-            );
-            startPos.set(xPos, worldBounds.getTop()+enemyShip.getHalfHeight()-0.001f);
             float type = (float) Math.random();
             if (type < 0.5f) {
                 generateInterval = 2.5f;
                 enemyShip.set(
-                        startPos,
                         enemySmallRegions,
                         enemySmallV,
                         bulletRegion,
@@ -93,7 +87,6 @@ public class EnemyEmitter {
             } else if (type < 0.8f) {
                 generateInterval = 4f;
                 enemyShip.set(
-                        startPos,
                         enemyMediumRegions,
                         enemyMediumV,
                         bulletRegion,
@@ -107,7 +100,6 @@ public class EnemyEmitter {
             } else {
                 generateInterval = 6f;
                 enemyShip.set(
-                        startPos,
                         enemyBigRegions,
                         enemyBigV,
                         bulletRegion,
@@ -119,7 +111,11 @@ public class EnemyEmitter {
                         ENEMY_BIG_HP
                 );
             }
-
+            xPos = Rnd.nextFloat(
+                    worldBounds.getLeft() + enemyShip.getHalfWidth(),
+                    worldBounds.getRight() - enemyShip.getHalfWidth()
+            );
+            enemyShip.setPos(xPos, worldBounds.getTop()+enemyShip.getHalfHeight());
         }
     }
 

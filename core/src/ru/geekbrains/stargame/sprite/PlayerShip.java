@@ -32,7 +32,7 @@ public class PlayerShip extends SpaceShip {
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         bulletV = new Vector2(0, 0.5f);
         sound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
-        reloadInterval = 0.25f;
+        reloadInterval = 5.25f;
         setHeightProportional(0.15f);
     }
 
