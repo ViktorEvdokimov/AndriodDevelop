@@ -14,6 +14,7 @@ public abstract class Sprite extends Rect {
     protected TextureRegion[] regions;
     protected int frame;
     protected boolean destroyed;
+    protected Vector2 bulletV;
 
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
@@ -55,7 +56,7 @@ public abstract class Sprite extends Rect {
         destroyed=true;
     }
 
-    public void update (float data, float delta){
+    public void update (int level, float delta){
     }
 
     public boolean isDestroyed() {

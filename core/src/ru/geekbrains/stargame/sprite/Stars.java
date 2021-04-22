@@ -10,8 +10,8 @@ import ru.geekbrains.stargame.math.Rnd;
 public class Stars {
 
     private Star[] stars;
-    private float woldSpeed;
     private Rect worldBounds;
+    private int level;
 
     public Stars(TextureAtlas atlas, int starsCount) {
         stars = new Star[starsCount];
@@ -29,10 +29,10 @@ public class Stars {
         }
     }
 
-    public void update(float woldSpeed, float delta) {
-        this.woldSpeed=woldSpeed;
+    public void update(int level, float delta) {
+        this.level=level;
         for (Star star: stars) {
-            star.update(woldSpeed, delta);
+            star.update(level, delta);
         }
     }
 

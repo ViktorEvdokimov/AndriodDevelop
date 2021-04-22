@@ -1,27 +1,49 @@
 package ru.geekbrains.stargame.sprite;
 
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.base.Sprite;
 import ru.geekbrains.stargame.math.Rect;
+import ru.geekbrains.stargame.pool.BulletPool;
+import ru.geekbrains.stargame.pool.ExplosionPool;
 
 public class SpaceShip extends Sprite {
 
 
+    protected final float DAMAGE_ANIMATE_INTERVAL = 0.1f;
     protected Rect worldBounds;
     protected  float reloadInterval;
     protected float reloadTimer;
+    protected BulletPool bulletPool;
+    protected Vector2 temp;
+    protected Sound sound;
+    protected TextureRegion bulletRegion;
+    protected int damage;
+    protected float bulletHeight;
+    protected Vector2 bulletV;
+    protected Vector2 v;
+    protected Vector2 bulletStartPosition;
+    protected int hp;
+    protected float damageAnimateTimer;
+    protected ExplosionPool explosionPool;
+    protected float speedMul = 0.1f;
 
-
-
-    public SpaceShip(TextureRegion region, int rows, int cols, int frames){
-        super(region, rows, cols, frames);
+    public SpaceShip(BulletPool bulletPool, Sound sound){
+        this.bulletPool = bulletPool;
+        this.sound = sound;
+        temp = new Vector2();
+        v = new Vector2();
+        bulletV = new Vector2();
+        bulletStartPosition = new Vector2();
     }
 
-    public SpaceShip() {
+    public int getHp() {
+        return hp;
     }
 
     @Override
@@ -30,7 +52,20 @@ public class SpaceShip extends Sprite {
     }
 
     @Override
-    public void update(float speed, float delta) {
+    public void update(int level, float delta) {
+        reloadTimer += delta;
+        if (reloadTimer > (reloadInterval / (1 + (float)level/10))) {
+            reloadTimer = 0f;
+            shoot();
+        }
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= DAMAGE_ANIMATE_INTERVAL) {
+            frame = 0;
+        }
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     @Override
@@ -54,5 +89,36 @@ public class SpaceShip extends Sprite {
     }
 
     protected void shoot () {
+        Bullet bullet = bulletPool.obtain();
+        sound.play(0.1f);
+        bullet.set(this, bulletRegion, this.bulletStartPosition, bulletV, worldBounds, damage, bulletHeight);
+    }
+
+    public void damage(int damage) {
+        hp -= damage;
+        if (hp <= 0) {
+            hp = 0;
+            destroy();
+        }
+        frame = 1;
+        damageAnimateTimer = 0f;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        boom();
+    }
+
+    public boolean isBulletCollision(Rect bullet){
+        return false;
+    }
+
+    private void boom() {
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(pos, getHeight());
+    }
+
+    public void newGame() {
     }
 }

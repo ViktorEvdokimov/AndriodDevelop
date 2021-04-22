@@ -26,9 +26,9 @@ public abstract class BaseSpritesPool<T extends Sprite> {
         return sprite;
     }
 
-    public void updateActiveSprites (float data, float delta){
+    public void updateActiveSprites (int level, float delta){
         for (Sprite sprite : activeObjects){
-            if (!sprite.destroyed) sprite.update(data, delta);
+            if (!sprite.destroyed) sprite.update(level, delta);
         }
     }
 
@@ -62,6 +62,15 @@ public abstract class BaseSpritesPool<T extends Sprite> {
         if (activeObjects.remove(sprite)) {
             freeObjects.add(sprite);
             System.out.println(getClass().getName() +" active/free : " + activeObjects.size() + "/" + freeObjects.size());
+        }
+    }
+
+    public void cleanAllActiveElements (){
+        for (int i=0; i<activeObjects.size(); i++){
+            T sprite = activeObjects.get(i);
+                free(sprite);
+                i--;
+                sprite.flushDestroy();
         }
     }
 }

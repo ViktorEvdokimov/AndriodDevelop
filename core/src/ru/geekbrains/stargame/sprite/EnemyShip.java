@@ -1,75 +1,62 @@
 package ru.geekbrains.stargame.sprite;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.stargame.math.Rect;
 import ru.geekbrains.stargame.pool.BulletPool;
+import ru.geekbrains.stargame.pool.ExplosionPool;
 import ru.geekbrains.stargame.units.EnemyEmitter;
 
 public class EnemyShip extends SpaceShip{
 
     private Vector2 startV;
-    private  BulletPool bulletPool;
-    private  Rect worldBounds;
-    private Sound sound;
     private  SpaceShip playerShip;
-    private  Vector2 v;
-    private float defaultSpeed;
-    private  Vector2 tmp;
-    private  TextureRegion bulletRegion;
-    private Vector2 bulletV;
-    private float bulletHeight;
-    private int damage;
-    private int hp;
+    private Vector2 defaultSpeed;
     private  EnemyEmitter enemyEmitter;
+    private Vector2 speed;
+    private int mulVX = 1;
+
 
 
     public EnemyShip(BulletPool bulletPool, Rect worldBounds,
-                     Sound sound, SpaceShip playerShip, EnemyEmitter enemyEmitter) {
+                     Sound sound, SpaceShip playerShip, EnemyEmitter enemyEmitter, ExplosionPool explosionPool) {
+        super(bulletPool, sound);
         this.bulletPool=bulletPool;
         this.worldBounds=worldBounds;
-        this.sound=sound;
         this.playerShip = playerShip;
-        this.sound = sound;
         this.enemyEmitter = enemyEmitter;
+        this.explosionPool = explosionPool;
+        defaultSpeed = new Vector2();
         v = new Vector2();
-        tmp = new Vector2();
+        temp = new Vector2();
+        speed = new Vector2();
         startV = new Vector2(0, -0.007f);
+        this.speedMul = speedMul * 5f;
     }
 
     @Override
-    public void update(float worldSpeed, float delta) {
-        if (bulletPool.isHit(this)) {
-            frame = 1;
-            destroy();
-        } else frame = 0;
+    public void update(int level, float delta) {
+        bulletStartPosition.set(pos.x, getBottom()-bulletHeight);
+        super.update(level, delta);
+        v.set(mulVX * defaultSpeed.x * speedMul * (1 + (float)level/10), -defaultSpeed.y * speedMul * (1 + (float)level/10));
         if (getTop()>worldBounds.getTop()){
             v.set(startV);
-        } else {
-            reloadTimer += delta;
-            if (reloadTimer > 0) {
-                reloadTimer = -reloadInterval;
-                shoot();
-            }
-            if (pos.x - playerShip.getPos().x > defaultSpeed) {
-                v.set(-defaultSpeed, 0);
-            } else if (pos.x - playerShip.getPos().x < -defaultSpeed) {
-                v.set(defaultSpeed, 0);
-            } else v.set(0, 0);
-            v.add(0, -defaultSpeed * worldSpeed);
         }
         pos.add(v);
-        if (getTop() < worldBounds.getBottom()) {
+        if (getTop() < worldBounds.getBottom() ) {
             destroy();
             enemyEmitter.shipOut();
+        } else if (getRight() > worldBounds.getRight() || getLeft() < worldBounds.getLeft()){
+            mulVX = -1 * mulVX;
         }
     }
 
     public void set (
             TextureRegion[] regions,
-            float defaultSpeed,
+            Vector2 defaultSpeed,
             TextureRegion bulletRegion,
             float bulletHeight,
             Vector2 bulletSpeed,
@@ -79,7 +66,7 @@ public class EnemyShip extends SpaceShip{
             int hp
     ) {
         this.regions = regions;
-        this.defaultSpeed = defaultSpeed;
+        this.defaultSpeed.set(defaultSpeed);
         this.bulletRegion = bulletRegion;
         this.bulletHeight = bulletHeight;
         this.bulletV = bulletSpeed;
@@ -87,14 +74,15 @@ public class EnemyShip extends SpaceShip{
         this.reloadInterval = reloadInterval;
         setHeightProportional(height);
         this.hp = hp;
-        reloadTimer = 0;
+        reloadTimer = reloadInterval * 0.8f;
     }
 
     @Override
-    protected void shoot() {
-        Bullet bullet = bulletPool.obtain();
-        tmp.set(pos.x, getBottom()-bulletHeight);
-        sound.play(0.1f);
-        bullet.set(this, bulletRegion, this.tmp, bulletV, worldBounds, damage, bulletHeight);
+    public boolean isBulletCollision(Rect bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > getTop()
+                || bullet.getTop() < pos.y);
     }
+
 }
