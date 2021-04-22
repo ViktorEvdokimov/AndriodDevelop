@@ -14,7 +14,14 @@ public class StarGame extends Game {
 	@Override
 	public void create() {
 		music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
+		music.setVolume(0.5f);
 		music.play();
 		setScreen(new MenuScreen(this));
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		music.dispose();
 	}
 }

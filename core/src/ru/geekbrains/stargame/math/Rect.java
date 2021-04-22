@@ -4,11 +4,20 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Rect {
 
-    public final Vector2 pos = new Vector2();
+    protected Vector2 pos;
     protected float halfWidth;
     protected float halfHeight;
 
     public Rect() {
+        pos = new Vector2();
+    }
+
+    public Vector2 getPos() {
+        return pos;
+    }
+
+    public void setPos(float x, float y) {
+        pos.set(x, y);
     }
 
     public Rect(Rect form) {
@@ -16,6 +25,7 @@ public class Rect {
     }
 
     public Rect(float x, float y, float halfWidth, float halfHeight) {
+        pos = new Vector2();
         pos.set(x,y);
         this.halfWidth = halfWidth;
         this.halfHeight = halfHeight;
