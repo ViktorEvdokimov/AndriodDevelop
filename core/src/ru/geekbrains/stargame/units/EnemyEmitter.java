@@ -48,7 +48,8 @@ public class EnemyEmitter {
     private final float enemyMediumV;
     private final float enemyBigV;
     private float xPos;
-    private Vector2 startPos;
+    private Vector2 speed;
+    private float mulHpByLevel;
 
     private float generateTimer;
 
@@ -62,20 +63,21 @@ public class EnemyEmitter {
         enemySmallRegions = Split.split(atlas.findRegion("enemy0"), 1, 2, 2);
         enemyMediumRegions = Split.split(atlas.findRegion("enemy1"), 1, 2, 2);
         enemyBigRegions = Split.split(atlas.findRegion("enemy2"), 1, 2, 2);
-        startPos = new Vector2();
+        speed = new Vector2();
     }
 
-    public void generate(float delta) {
-        generateTimer += delta;
+    public void generate(int level, float delta) {
+        generateTimer += delta * (1 + level / 10f);;
         if (generateTimer >= generateInterval) {
             generateTimer = 0;
             EnemyShip enemyShip = enemyPool.obtain();
             float type = (float) Math.random();
             if (type < 0.5f) {
                 generateInterval = 1.5f;
+                speed.set(Rnd.nextFloat(-enemySmallV, enemySmallV), enemySmallV);
                 enemyShip.set(
                         enemySmallRegions,
-                        enemySmallV,
+                        speed,
                         bulletRegion,
                         ENEMY_SMALL_BULLET_HEIGHT,
                         ENEMY_SMALL_BULLET_VY,
@@ -85,10 +87,11 @@ public class EnemyEmitter {
                         ENEMY_SMALL_HP
                 );
             } else if (type < 0.8f) {
-                generateInterval = 2.5f;
+                generateInterval = 3f;
+                speed.set(Rnd.nextFloat(-enemyMediumV, enemyMediumV), enemyMediumV);
                 enemyShip.set(
                         enemyMediumRegions,
-                        enemyMediumV,
+                        speed,
                         bulletRegion,
                         ENEMY_MEDIUM_BULLET_HEIGHT,
                         ENEMY_MEDIUM_BULLET_VY,
@@ -98,10 +101,11 @@ public class EnemyEmitter {
                         ENEMY_MEDIUM_HP
                 );
             } else {
-                generateInterval = 4f;
+                generateInterval = 5f;
+                speed.set(Rnd.nextFloat(-enemyBigV, enemyBigV), enemyBigV);
                 enemyShip.set(
                         enemyBigRegions,
-                        enemyBigV,
+                        speed,
                         bulletRegion,
                         ENEMY_BIG_BULLET_HEIGHT,
                         ENEMY_BIG_BULLET_VY,

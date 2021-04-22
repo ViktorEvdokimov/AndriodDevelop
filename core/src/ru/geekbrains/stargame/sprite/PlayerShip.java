@@ -14,13 +14,14 @@ import ru.geekbrains.stargame.pool.ExplosionPool;
 
 public class PlayerShip extends SpaceShip {
 
-
+    protected final int DEFAULT_HP = 10;
     private Vector2 purpose = new Vector2();
     private Vector2 direction = new Vector2();
     private boolean upPressed = false;
     private boolean downPressed = false;
     private boolean leftPressed = false;
     private boolean rightPressed = false;
+    private int previousLevel = 1;
 
 
     public PlayerShip(TextureAtlas atlas, BulletPool bulletPool,
@@ -35,7 +36,8 @@ public class PlayerShip extends SpaceShip {
         setHeightProportional(0.15f);
         this.damage =1;
         this.bulletHeight = 0.01f;
-        hp = 1;
+        hp = DEFAULT_HP;
+        this.speedMul = 1.5f * speedMul;
     }
 
     @Override
@@ -55,13 +57,15 @@ public class PlayerShip extends SpaceShip {
     }
 
     @Override
-    public void update(float worldSpeed, float delta) {
+    public void update(int level, float delta) {
         bulletStartPosition.set(pos.x, getTop()+bulletHeight);
-        super.update(worldSpeed, delta);
+        super.update(level, delta);
+        if (previousLevel < level) hp +=4 + level;
+        previousLevel = level;
         temp.set(purpose);
         direction.set(purpose);
         direction.sub(pos);
-        direction.setLength(0.003f*worldSpeed);
+        direction.setLength(speedMul * delta * (1 + (float)level/10));
         if(temp.sub(pos).len()<=direction.len()) {
             pos.set(purpose);
         }
@@ -78,10 +82,10 @@ public class PlayerShip extends SpaceShip {
         if (getRight() > worldBounds.getRight()) {
             purpose.set(worldBounds.getRight()-getHalfWidth(), purpose.y);
         }
-        if (upPressed) purpose.add(0, 0.003f*worldSpeed);
-        if (downPressed) purpose.add(0, -(0.003f*worldSpeed));
-        if (rightPressed) purpose.add(0.003f*worldSpeed, 0);
-        if (leftPressed) purpose.add(-(0.003f*worldSpeed), 0);
+        if (upPressed) purpose.add(0, speedMul * delta *(1 + (float)level/10) );
+        if (downPressed) purpose.add(0, -(speedMul* delta *(1 + (float)level/10)));
+        if (rightPressed) purpose.add(speedMul* delta *(1 + (float)level/10), 0);
+        if (leftPressed) purpose.add(-(speedMul* delta *(1 + (float)level/10)), 0);
 
     }
     @Override
@@ -109,5 +113,16 @@ public class PlayerShip extends SpaceShip {
                 || bullet.getLeft() > getRight()
                 || bullet.getBottom() > pos.y
                 || bullet.getTop() < getBottom());
+    }
+
+    @Override
+    public void newGame() {
+        hp = DEFAULT_HP;
+        upPressed=false;
+        downPressed=false;
+        leftPressed=false;
+        rightPressed=false;
+        pos.set(0f, worldBounds.getBottom());
+        purpose.set(0f, worldBounds.getBottom());
     }
 }

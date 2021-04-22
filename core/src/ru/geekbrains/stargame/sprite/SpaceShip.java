@@ -14,6 +14,7 @@ import ru.geekbrains.stargame.pool.ExplosionPool;
 
 public class SpaceShip extends Sprite {
 
+
     protected final float DAMAGE_ANIMATE_INTERVAL = 0.1f;
     protected Rect worldBounds;
     protected  float reloadInterval;
@@ -30,8 +31,7 @@ public class SpaceShip extends Sprite {
     protected int hp;
     protected float damageAnimateTimer;
     protected ExplosionPool explosionPool;
-
-
+    protected float speedMul = 0.1f;
 
     public SpaceShip(BulletPool bulletPool, Sound sound){
         this.bulletPool = bulletPool;
@@ -42,6 +42,9 @@ public class SpaceShip extends Sprite {
         bulletStartPosition = new Vector2();
     }
 
+    public int getHp() {
+        return hp;
+    }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
@@ -49,9 +52,9 @@ public class SpaceShip extends Sprite {
     }
 
     @Override
-    public void update(float speed, float delta) {
+    public void update(int level, float delta) {
         reloadTimer += delta;
-        if (reloadTimer > reloadInterval) {
+        if (reloadTimer > (reloadInterval / (1 + (float)level/10))) {
             reloadTimer = 0f;
             shoot();
         }
@@ -116,7 +119,6 @@ public class SpaceShip extends Sprite {
         explosion.set(pos, getHeight());
     }
 
-    public void setHp(int hp) {
-        this.hp = hp;
+    public void newGame() {
     }
 }

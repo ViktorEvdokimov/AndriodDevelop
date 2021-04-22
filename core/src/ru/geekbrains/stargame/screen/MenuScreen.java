@@ -59,7 +59,7 @@ public class MenuScreen extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
-        stars.update(worldSpeed, delta);
+        stars.update(1, delta);
         stars.draw(batch);
         exitButton.draw(batch);
         playButton.draw(batch);

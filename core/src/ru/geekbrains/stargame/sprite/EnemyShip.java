@@ -14,8 +14,11 @@ public class EnemyShip extends SpaceShip{
 
     private Vector2 startV;
     private  SpaceShip playerShip;
-    private float defaultSpeed;
+    private Vector2 defaultSpeed;
     private  EnemyEmitter enemyEmitter;
+    private Vector2 speed;
+    private int mulVX = 1;
+
 
 
     public EnemyShip(BulletPool bulletPool, Rect worldBounds,
@@ -26,35 +29,34 @@ public class EnemyShip extends SpaceShip{
         this.playerShip = playerShip;
         this.enemyEmitter = enemyEmitter;
         this.explosionPool = explosionPool;
+        defaultSpeed = new Vector2();
         v = new Vector2();
         temp = new Vector2();
+        speed = new Vector2();
         startV = new Vector2(0, -0.007f);
+        this.speedMul = speedMul * 5f;
     }
 
     @Override
-    public void update(float worldSpeed, float delta) {
+    public void update(int level, float delta) {
         bulletStartPosition.set(pos.x, getBottom()-bulletHeight);
-        super.update(worldSpeed, delta);
+        super.update(level, delta);
+        v.set(mulVX * defaultSpeed.x * speedMul * (1 + (float)level/10), -defaultSpeed.y * speedMul * (1 + (float)level/10));
         if (getTop()>worldBounds.getTop()){
             v.set(startV);
-        } else {
-            if (pos.x - playerShip.getPos().x > defaultSpeed) {
-                v.set(-defaultSpeed, 0);
-            } else if (pos.x - playerShip.getPos().x < -defaultSpeed) {
-                v.set(defaultSpeed, 0);
-            } else v.set(0, 0);
-            v.add(0, -defaultSpeed * worldSpeed);
         }
         pos.add(v);
-        if (getTop() < worldBounds.getBottom()) {
+        if (getTop() < worldBounds.getBottom() ) {
             destroy();
             enemyEmitter.shipOut();
+        } else if (getRight() > worldBounds.getRight() || getLeft() < worldBounds.getLeft()){
+            mulVX = -1 * mulVX;
         }
     }
 
     public void set (
             TextureRegion[] regions,
-            float defaultSpeed,
+            Vector2 defaultSpeed,
             TextureRegion bulletRegion,
             float bulletHeight,
             Vector2 bulletSpeed,
@@ -64,7 +66,7 @@ public class EnemyShip extends SpaceShip{
             int hp
     ) {
         this.regions = regions;
-        this.defaultSpeed = defaultSpeed;
+        this.defaultSpeed.set(defaultSpeed);
         this.bulletRegion = bulletRegion;
         this.bulletHeight = bulletHeight;
         this.bulletV = bulletSpeed;

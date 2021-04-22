@@ -12,6 +12,7 @@ public class Explosion extends Sprite {
 
     private final Sound explosionSound;
     private float animateTimer;
+    private float speedMul = -0.1f;
 
     public Explosion(TextureAtlas atlas, Sound explosionSound) {
         super(atlas.findRegion("explosion"), 9, 9, 74);
@@ -25,7 +26,7 @@ public class Explosion extends Sprite {
     }
 
     @Override
-    public void update(float data, float delta) {
+    public void update(int level, float delta) {
         animateTimer += delta;
         if (animateTimer >= ANIMATE_INTERVAL) {
             animateTimer = 0f;
@@ -33,7 +34,7 @@ public class Explosion extends Sprite {
                 destroy();
             }
         }
-        pos.add(0, -0.002f * data);
+        pos.add(0, delta * speedMul * (1 + (float)level/10));
     }
 
     @Override

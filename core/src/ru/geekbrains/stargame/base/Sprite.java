@@ -56,7 +56,7 @@ public abstract class Sprite extends Rect {
         destroyed=true;
     }
 
-    public void update (float data, float delta){
+    public void update (int level, float delta){
     }
 
     public boolean isDestroyed() {

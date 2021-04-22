@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.List;
 
 import ru.geekbrains.stargame.StarGame;
 import ru.geekbrains.stargame.base.BaseScreen;
+import ru.geekbrains.stargame.base.Font;
 import ru.geekbrains.stargame.math.Rect;
 import ru.geekbrains.stargame.pool.BulletPool;
 import ru.geekbrains.stargame.pool.EnemyPool;
@@ -43,6 +45,19 @@ public class GameScreen extends BaseScreen {
     private GameOver gameOver;
     private NewGameButton newGameButton;
 
+    private Font font;
+    private static final float FONT_SIZE = 0.02f;
+    private StringBuilder sbFrags;
+    private StringBuilder sbHp;
+    private StringBuilder sbLevel;
+    private static final float PADDING = 0.01f;
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "HP: ";
+    private static final String LEVEL = "Level: ";
+
+    private int frags;
+    private int level;
+
     @Override
     public void show() {
         super.show();
@@ -61,6 +76,12 @@ public class GameScreen extends BaseScreen {
         enemyPool.setEnemyEmitter(enemyEmitter);
         gameOver = new GameOver(atlas);
         newGameButton = new NewGameButton(atlas, this);
+
+        font = new Font("font/font.fnt", "font/font.png");
+        sbFrags = new StringBuilder();
+        sbHp = new StringBuilder();
+        sbLevel = new StringBuilder();
+        frags = 0;
     }
 
     @Override
@@ -71,6 +92,7 @@ public class GameScreen extends BaseScreen {
         spaceShip.resize(worldBounds);
         gameOver.resize(worldBounds);
         newGameButton.resize(worldBounds);
+        font.setSize(FONT_SIZE);
     }
 
     @Override
@@ -83,14 +105,15 @@ public class GameScreen extends BaseScreen {
     }
 
     private void update (float delta){
-        stars.update(worldSpeed, delta);
+        level = 1 + frags / 10;
+        stars.update(level, delta);
         if (!spaceShip.isDestroyed()) {
-            spaceShip.update(worldSpeed, delta);
-            bulletPool.updateActiveSprites(worldSpeed, delta);
-            enemyEmitter.generate(delta);
-            enemyPool.updateActiveSprites(worldSpeed, delta);
+            spaceShip.update(level, delta);
+            bulletPool.updateActiveSprites(level, delta);
+            enemyEmitter.generate(level, delta);
+            enemyPool.updateActiveSprites(level, delta);
         }
-        explosionPool.updateActiveSprites(worldSpeed, delta);
+        explosionPool.updateActiveSprites(level, delta);
     }
 
     private void checkCollision() {
@@ -120,6 +143,9 @@ public class GameScreen extends BaseScreen {
                 if (enemyShip.isBulletCollision(bullet)) {
                     enemyShip.damage(bullet.getDamage());
                     bullet.destroy();
+                    if (enemyShip.isDestroyed()) {
+                        frags++;
+                    }
                 }
             }
             if (bullet.getOwner() != spaceShip) {
@@ -150,6 +176,7 @@ public class GameScreen extends BaseScreen {
             newGameButton.draw(batch);
         }
         explosionPool.drawActiveSprites(batch);
+        printInfo();
         batch.end();
     }
 
@@ -165,14 +192,17 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        spaceShip.touchDown(touch,pointer,button);
-        newGameButton.touchDown(touch, pointer, button);
+        if (spaceShip.isDestroyed()) {
+            newGameButton.touchDown(touch, pointer, button);
+        } else spaceShip.touchDown(touch,pointer,button);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-        newGameButton.touchUp(touch, pointer, button);
+        if  (spaceShip.isDestroyed()) {
+            newGameButton.touchUp(touch, pointer, button);
+        }
         return false;
     }
 
@@ -192,8 +222,18 @@ public class GameScreen extends BaseScreen {
         enemyPool.cleanAllActiveElements();
         bulletPool.cleanAllActiveElements();
         worldSpeed = 1f;
-        spaceShip.setHp(100);
+        spaceShip.newGame();
         spaceShip.flushDestroy();
+        frags = 0;
+    }
+
+    private void printInfo() {
+        sbFrags.setLength(0);
+        sbHp.setLength(0);
+        sbLevel.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + PADDING, worldBounds.getTop() - PADDING);
+        font.draw(batch, sbHp.append(HP).append(spaceShip.getHp()), worldBounds.getPos().x, worldBounds.getTop() - PADDING, Align.center);
+        font.draw(batch, sbLevel.append(LEVEL).append(level), worldBounds.getRight() - PADDING, worldBounds.getTop() - PADDING, Align.right);
     }
 }
 

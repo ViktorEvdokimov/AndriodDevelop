@@ -26,9 +26,9 @@ public abstract class BaseSpritesPool<T extends Sprite> {
         return sprite;
     }
 
-    public void updateActiveSprites (float data, float delta){
+    public void updateActiveSprites (int level, float delta){
         for (Sprite sprite : activeObjects){
-            if (!sprite.destroyed) sprite.update(data, delta);
+            if (!sprite.destroyed) sprite.update(level, delta);
         }
     }
 

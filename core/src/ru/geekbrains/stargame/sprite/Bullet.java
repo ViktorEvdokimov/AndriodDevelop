@@ -13,6 +13,7 @@ public class Bullet extends Sprite {
         private int damage;
         private Sprite owner;
         private Vector2 tmp;
+        private float speedMul = 100f;
 
         public Bullet() {
             regions = new TextureRegion[1];
@@ -40,8 +41,8 @@ public class Bullet extends Sprite {
         }
 
         @Override
-        public void update(float worldSpeed, float delta) {
-            tmp.set(v.x, v.y*worldSpeed);
+        public void update(int level, float delta) {
+            tmp.set(v.x, v.y* delta * speedMul *(1 + (float)level/10));
             pos.mulAdd(tmp, delta);
             if (isOutside(worldBounds)) {
                 destroy();
