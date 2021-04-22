@@ -6,23 +6,13 @@ import ru.geekbrains.stargame.sprite.Bullet;
 
 public class BulletPool  extends BaseSpritesPool<Bullet> {
 
-    private boolean isHit;
 
     @Override
     protected Bullet newSprite() {
         return new Bullet();
     }
 
-    public boolean isHit (Sprite sprite){
-        isHit=false;
-        for (Bullet bullet : getActiveObjects()) {
-            if(!bullet.isOutside(sprite)) {
-                bullet.destroy();
-                isHit = true;
-            }
-        }
-        return isHit;
-    }
+
 }
 
 

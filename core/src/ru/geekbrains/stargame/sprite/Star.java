@@ -16,7 +16,7 @@ public class Star extends Sprite {
 
     public Star(TextureAtlas atlas) {
         super(atlas.findRegion("star"));
-        v = new Vector2(Rnd.nextFloat(-0.0004F, 0.0004F), Rnd.nextFloat(0.0014F, 0.004F));
+        v = new Vector2(Rnd.nextFloat(-0.0004F, 0.0004F), Rnd.nextFloat(-0.0014F, -0.004F));
         height = Rnd.nextFloat(0.01F, 0.001F);
 
     }

@@ -3,30 +3,22 @@ package ru.geekbrains.stargame.math;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Split {
-    public static TextureRegion[] split
-            (TextureRegion textureRegion, int rows, int cols, int quantity) {
 
-        int x = textureRegion.getRegionX();
-        int y = textureRegion.getRegionY();
-        int width = textureRegion.getRegionWidth();
-        int height = textureRegion.getRegionHeight();
-        int tileWidth = width / cols;
-        int tileHeight = height / rows;
 
-//        int rows = height / tileHeight;
-//        int cols = width / tileWidth;
+    public static TextureRegion[] split(TextureRegion region, int rows, int cols, int frames) {
+        if(region == null) throw new RuntimeException("Split null region");
+        TextureRegion[] regions = new TextureRegion[frames];
+        int tileWidth = region.getRegionWidth() / cols;
+        int tileHeight = region.getRegionHeight() / rows;
 
-        int startX = x;
-        TextureRegion[] tiles = new TextureRegion[quantity];
-        for (int row = 0; row < rows; row++, y += tileHeight) {
-            x = startX;
-            for (int col = 0; col < cols; col++, x += tileWidth) {
-                int count = row * col + col;
-                if ((count)<quantity) {
-                    tiles[count] = new TextureRegion(textureRegion.getTexture(), x, y, tileWidth, tileHeight);
-                }
+        int frame = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                regions[frame] = new TextureRegion(region, tileWidth * j, tileHeight * i, tileWidth, tileHeight);
+                if(frame == frames - 1) return regions;
+                frame++;
             }
         }
-        return tiles;
+        return regions;
     }
 }
